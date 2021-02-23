@@ -11,15 +11,15 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'
         integrity='sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=='
         crossorigin='anonymous'></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+        <script type='text/javascript'
+        src='https://www.bing.com/api/maps/mapcontrol'
+        async defer></script>
     <script src="app.js"></script>
 
     <title>SG Address Utility</title>
@@ -28,17 +28,17 @@
 <body>
     <div class="form-group">
         <label for="keyEntry">Enter key</label>
-        <input type="password" class="form-control" name="keyEntry" id="keyEntry" placeholder="key">
+        <input type="password" class="form-control" name="keyEntry" id="keyEntry" placeholder="key" value="testAPI">
     </div>
+    <button type="submit" id="loadMapBtn" class="btn btn-primary">Load Map</button>
     <div class="form-group">
         <label for="addresses">Enter address, one per</label>
-        <textarea class="form-control" name="addresses" id="addresses" rows="3"></textarea>
+        <textarea class="form-control" name="addresses" id="addresses" rows="3">1 Redmond Way WA</textarea>
     </div>
     <button type="submit" id="formSubmitBtn" class="btn btn-primary">Submit</button>
 
-    <!-- <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div> -->
+    <div id="myMap" style='position:relative;width:600px;height:400px;'></div>
+    <div id='output' style="margin-left:10px;float:left;"></div>
 </body>
 
 </html>
