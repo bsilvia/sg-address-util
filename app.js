@@ -1,4 +1,5 @@
 var map, searchManager;
+var results = [];
 
 jQuery(function () {
     //alert("Handler for .submit() called.");
@@ -17,8 +18,17 @@ jQuery(function () {
         var list = $("#addresses").val()
 
         ValidateFormInput(key, list)
+        var addressList = list.split("\n");
+        addressList.forEach(addr => {
+            Search(addr);
+        });
     });
 
+    $("#genTableBtn").on("click", function (event) {
+        var id = '1', lat = '42.235', long = '-97.3', name = 'nice name';
+        var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" + name + "</td></tr>";
+        $("table tbody").append(markup);
+    });
 
 });
 
@@ -31,7 +41,7 @@ function Search(query) {
         });
     } else {
         // remove previous results from the map
-        map.entities.clear();
+        //map.entities.clear();
 
         // geocode user query
         geocodeQuery(query);
@@ -45,8 +55,12 @@ function geocodeQuery(query) {
             if (r && r.results && r.results.length > 0) {
                 var pin, pins = [], locs = [], output = 'Results:<br/>';
 
+                //Create a pushpin for each result. 
                 for (var i = 0; i < r.results.length; i++) {
-                    //Create a pushpin for each result. 
+                    if (i == 0) {
+                        results.push(r.results[0]);
+                    }
+
                     pin = new Microsoft.Maps.Pushpin(r.results[i].location, {
                         text: i + ''
                     });
@@ -55,12 +69,12 @@ function geocodeQuery(query) {
 
                     output += i + ') ' + r.results[i].name + '<br/>';
                 }
+                //Display list of results
+                document.getElementById('output').innerHTML = output;
 
                 //Add the pins to the map
                 map.entities.push(pins);
 
-                //Display list of results
-                document.getElementById('output').innerHTML = output;
 
                 //Determine a bounding box to best view the results.
                 var bounds;
@@ -109,38 +123,4 @@ function ValidateAddressList(addresses) {
     //     });
     // }
     return true;
-}
-
-function submitRest(key, address) {
-    var baseUrl = "http://dev.virtualearth.net/REST/v1/Locations";
-    var encodedAdr = encodeURIComponent(address);
-    var urlToPost = baseUrl + "?q=" + encodedAdr + "&key=" + key + ""
-    console.log('urlToPost ' + urlToPost)
-    //return
-
-    $.post(urlToPost, { q: encodedAdr, key: key, contentType: "application/json", crossDomain: true },
-        function (returnedData) {
-            console.log(returnedData);
-        }).fail(function (ts) {
-            console.log("error");
-        });
-
-    return;
-
-    $.ajax({
-        url: urlToPost + "&inclnb=1",
-        contentType: "application/json",
-        dataType: 'jsonp',
-        //crossDomain: true,
-        success: function (result) {
-            var tt = result;
-        },
-        error: function (ts) {
-            alert(ts.status + " " + ts.responseText);
-            var x = 11;
-        }
-
-    }).then(function (data) {
-
-    });
 }
