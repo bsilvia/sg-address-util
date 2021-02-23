@@ -2,7 +2,8 @@ var map, searchManager;
 var results = [];
 
 jQuery(function () {
-    //alert("Handler for .submit() called.");
+    $("#resultsTable").hide();
+    $("#formSubmitBtn").prop("disabled", !map);
 
     $("#loadMapBtn").on("click", function (event) {
         var key = $("#keyEntry").val()
@@ -11,26 +12,35 @@ jQuery(function () {
         map = new Microsoft.Maps.Map('#myMap', {
             credentials: key
         });
+        $("#formSubmitBtn").prop("disabled", !map);
+        $("#loadMapBtn").prop("disabled", map);
     });
 
     $("#formSubmitBtn").on("click", function (event) {
         var key = $("#keyEntry").val()
         var list = $("#addresses").val()
 
-        ValidateFormInput(key, list)
-        var addressList = list.split("\n");
-        addressList.forEach(addr => {
-            Search(addr);
-        });
+        if (ValidateFormInput(key, list)) {
+            var addressList = list.split("\n");
+            addressList.forEach(addr => {
+                //Search(addr);
+            });
+        }
+
+        // TODO - move into validate section
+        $("#resultsTable").show();
     });
 
     $("#genTableBtn").on("click", function (event) {
         var id = '1', lat = '42.235', long = '-97.3', name = 'nice name';
-        var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" + name + "</td></tr>";
-        $("table tbody").append(markup);
+        AddLineToGrid(id, lat, long, name);
     });
-
 });
+
+function AddLineToGrid(id, lat, long, description) {
+    var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" + description + "</td></tr>";
+    $("table tbody").append(markup);
+}
 
 function Search(query) {
     if (!searchManager) {
@@ -58,7 +68,12 @@ function geocodeQuery(query) {
                 //Create a pushpin for each result. 
                 for (var i = 0; i < r.results.length; i++) {
                     if (i == 0) {
+                        var id = results.length
                         results.push(r.results[0]);
+                        var lat = r.results[0].location.latitude;
+                        var long = r.results[0].location.longitude;
+                        var name = r.results[0].address.formattedAddress;
+                        AddLineToGrid(id, lat, long, name);
                     }
 
                     pin = new Microsoft.Maps.Pushpin(r.results[i].location, {
@@ -70,7 +85,7 @@ function geocodeQuery(query) {
                     output += i + ') ' + r.results[i].name + '<br/>';
                 }
                 //Display list of results
-                document.getElementById('output').innerHTML = output;
+                // document.getElementById('output').innerHTML = output;
 
                 //Add the pins to the map
                 map.entities.push(pins);
