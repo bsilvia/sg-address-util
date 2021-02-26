@@ -23,7 +23,7 @@ jQuery(function () {
         if (ValidateFormInput(key, list)) {
             var addressList = list.split("\n");
             addressList.forEach(addr => {
-                //Search(addr);
+                Search(addr);
             });
         }
 
