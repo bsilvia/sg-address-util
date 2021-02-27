@@ -1,0 +1,8 @@
+.fullViewSize {
+	height: 100vh;
+	width: 100vw;
+}
+
+.paddedRow{
+	margin-bottom: 15px;
+}
