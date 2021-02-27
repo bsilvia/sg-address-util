@@ -2,13 +2,14 @@ var map, searchManager;
 var results = [];
 
 jQuery(function () {
+    $("#myMap").hide();
     $("#resultsTable").hide();
     $("#formSubmitBtn").prop("disabled", !map);
 
     $("#loadMapBtn").on("click", function (event) {
         var key = $("#keyEntry").val()
         var list = $("#addresses").val()
-
+        $("#myMap").show();
         map = new Microsoft.Maps.Map('#myMap', {
             credentials: key
         });

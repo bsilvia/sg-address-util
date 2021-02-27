@@ -8,16 +8,16 @@
 
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'
-    integrity='sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=='
-    crossorigin='anonymous'></script>
+        integrity='sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=='
+        crossorigin='anonymous'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
     <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol' async defer></script>
     <link rel="stylesheet" href="main.css">
     <script src="app.js"></script>
@@ -25,44 +25,59 @@
     <title>SG Address Utility</title>
 </head>
 
-<body>
-    <div class="form-group">
-        <label for="keyEntry">Enter key</label>
-        <input type="password" class="form-control" name="keyEntry" id="keyEntry" placeholder="Enter map key">
-    </div>
-    <button type="submit" id="loadMapBtn" class="btn btn-primary">Load Map</button>
-    <br><br>
-    <div class="form-group">
-        <label for="addresses">Enter addresses, one per line</label>
-        <textarea class="form-control" name="addresses" id="addresses" rows="10">
+<body class="fullViewSize">
+    <div class="container-fluid fullViewSize">
+        <div class="row fullViewSize">
+            <div class="col-5">
+                <div class="container-fluid">
+                    <div class="row paddedRow">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="keyEntry">Enter key</label>
+                                <input type="password" class="form-control" name="keyEntry" id="keyEntry"
+                                    placeholder="Enter map key">
+                            </div>
+                            <button type="submit" id="loadMapBtn" class="btn btn-primary">Load Map</button>
+                        </div>
+                    </div>
+                    <div class="row paddedRow">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="addresses">Enter addresses, one per line</label>
+                                <textarea class="form-control" name="addresses" id="addresses" rows="5">
 234 5th Ave NW LeMars, IA 51031
 817 Highway 247, Suite 8		Kathleen	GA	31047
 345 NE 8th Street, Gresham		Gresham	OR	97030
 12701 Van Nuys Blvd., Suite F & G		Pacoima	CA 	91331
 11740 156 Street NW		Edmonton	AB	T5M 3T5
 1311 25 Avenue NE		Calgary	AB	T2E 7L6
-        </textarea>
+                                </textarea>
+                            </div>
+                            <button type="submit" id="formSubmitBtn" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                    <div class="row paddedRow">
+                        <table class="table" id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Lat</th>
+                                    <th>Long</th>
+                                    <th>Formatted Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col" id="mapControlDiv">
+                <div id="myMap"></div>
+            </div>
+        </div>
     </div>
-    <button type="submit" id="formSubmitBtn" class="btn btn-primary">Submit</button>
-
-    <div id="myMap" style='position:relative;width:600px;height:400px;'></div>
-
-    <button type="submit" hidden id="genTableBtn" class="btn btn-primary">Generate Table</button>
-    <br>
-    <br>
-    <table class="table" id="resultsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Lat</th>
-                <th>Long</th>
-                <th>Formatted Address</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-    </table>
 </body>
 
 </html>
