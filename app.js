@@ -3,7 +3,7 @@ var results = [];
 
 jQuery(function () {
     $("#myMap").hide();
-    $("#resultsTable").hide();
+    // $("#resultsTable").hide();
     $("#formSubmitBtn").prop("disabled", !map);
 
     $("#loadMapBtn").on("click", function (event) {
@@ -20,6 +20,8 @@ jQuery(function () {
     $("#formSubmitBtn").on("click", function (event) {
         var key = $("#keyEntry").val()
         var list = $("#addresses").val()
+        // remove previous results from map
+        map.entities.clear();
 
         if (ValidateFormInput(key, list)) {
             var addressList = list.split("\n");
@@ -29,7 +31,20 @@ jQuery(function () {
         }
 
         // TODO - move into validate section
-        $("#resultsTable").show();
+        // $("#resultsTable").show();
+    });
+
+    $("#formClearAdrBtn").on("click", function (event) {
+        ClearAddressInput();
+    });
+
+    $("#formClearResultsBtn").on("click", function (event) {
+        ClearResultsGrid();
+    });
+
+    $("#formClearAllBtn").on("click", function (event) {
+        ClearAddressInput();
+        ClearResultsGrid();
     });
 
     $("#genTableBtn").on("click", function (event) {
@@ -39,8 +54,17 @@ jQuery(function () {
 });
 
 function AddLineToGrid(id, lat, long, description) {
+    // TODO - add hyperlink for issue #4
     var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" + description + "</td></tr>";
     $("table tbody").append(markup);
+}
+
+function ClearAddressInput() {
+    $("#addresses").empty()
+}
+
+function ClearResultsGrid() {
+    $("table tbody").empty();
 }
 
 function Search(query) {
@@ -51,9 +75,6 @@ function Search(query) {
             Search(query)
         });
     } else {
-        // remove previous results from the map
-        //map.entities.clear();
-
         // geocode user query
         geocodeQuery(query);
     }
@@ -85,34 +106,32 @@ function geocodeQuery(query) {
 
                     output += i + ') ' + r.results[i].name + '<br/>';
                 }
-                //Display list of results
-                // document.getElementById('output').innerHTML = output;
 
-                //Add the pins to the map
-                map.entities.push(pins);
-
-
-                //Determine a bounding box to best view the results.
-                var bounds;
-
-                if (r.results.length == 1) {
-                    bounds = r.results[0].bestView;
-                } else {
-                    //Use the locations from the results to calculate a bounding box.
-                    bounds = Microsoft.Maps.LocationRect.fromLocations(locs);
-                }
-
-                map.setView({ bounds: bounds });
+                //SetMapBoundingBox(locs, pins);
             }
         },
         errorCallback: function (e) {
             //If there is an error, alert the user about it.
-            alert("No results found.");
+            //alert("No results found.");
+            console.log("No results found");
         }
     };
 
     //Make the geocode request.
     searchManager.geocode(searchRequest);
+}
+
+function SetMapBoundingBox(locs, pins) {
+    //Add the pins to the map
+    map.entities.push(pins);
+
+    //Determine a bounding box to best view the results.
+    var bounds;
+
+    //Use the locations from the results to calculate a bounding box.
+    bounds = Microsoft.Maps.LocationRect.fromLocations(locs);
+
+    map.setView({ bounds: bounds });
 }
 
 function ValidateFormInput(key, addresses) {
@@ -132,11 +151,5 @@ function ValidateAddressList(addresses) {
         alert("Address text is required");
         return false;
     }
-    // else {
-    //     var addressList = addresses.split("\n");
-    //     addressList.forEach(addr => {
-    //         submitRest(key, addr);
-    //     });
-    // }
     return true;
 }
