@@ -26,7 +26,9 @@ jQuery(function () {
         if (ValidateFormInput(key, list)) {
             var addressList = list.split("\n");
             addressList.forEach(addr => {
-                Search(addr);
+                if (addr.trim().length > 0) {
+                    Search(addr);
+                }
             });
         }
 
@@ -56,10 +58,10 @@ jQuery(function () {
 function AddLineToGrid(id, lat, long, description) {
     // TODO - add hyperlink for issue #4
     var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" +
-    "<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" + encodeURIComponent(description) +
-    "\" target=\"_blank\" rel=\"noopener noreferrer\">" +
-    description + "</a>" +
-    "</td></tr>";
+        "<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" + encodeURIComponent(description) +
+        "\" target=\"_blank\" rel=\"noopener noreferrer\">" +
+        description + "</a>" +
+        "</td></tr>";
     $("table tbody").append(markup);
 }
 
