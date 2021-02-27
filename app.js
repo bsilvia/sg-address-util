@@ -3,7 +3,6 @@ var results = [];
 
 jQuery(function () {
     $("#myMap").hide();
-    // $("#resultsTable").hide();
     $("#formSubmitBtn").prop("disabled", !map);
 
     $("#loadMapBtn").on("click", function (event) {
@@ -31,9 +30,6 @@ jQuery(function () {
                 }
             });
         }
-
-        // TODO - move into validate section
-        // $("#resultsTable").show();
     });
 
     $("#formClearAdrBtn").on("click", function (event) {
@@ -56,7 +52,6 @@ jQuery(function () {
 });
 
 function AddLineToGrid(id, lat, long, description) {
-    // TODO - add hyperlink for issue #4
     var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" +
         "<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" + encodeURIComponent(description) +
         "\" target=\"_blank\" rel=\"noopener noreferrer\">" +
@@ -113,10 +108,12 @@ function geocodeQuery(query) {
                     output += i + ') ' + r.results[i].name + '<br/>';
                 }
 
+                // TODO - update pins #2 and bounding boxes #3
                 //SetMapBoundingBox(locs, pins);
             }
         },
         errorCallback: function (e) {
+            // TODO - see about using bootstrap alerts #8
             //If there is an error, alert the user about it.
             //alert("No results found.");
             console.log("No results found");
