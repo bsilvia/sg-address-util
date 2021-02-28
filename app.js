@@ -60,7 +60,6 @@ function AddResultToGrid(id, result) {
 }
 
 function AddLineToGrid(id, lat, long, description) {
-    // TODO - add hyperlink for issue #4
     var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" +
         "<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" + encodeURIComponent(description) +
         "\" target=\"_blank\" rel=\"noopener noreferrer\">" +
