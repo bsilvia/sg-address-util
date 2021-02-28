@@ -1,5 +1,5 @@
 var map, searchManager;
-var results = [];
+var masterResults = [];
 
 jQuery(function () {
     $("#myMap").hide();
@@ -20,7 +20,8 @@ jQuery(function () {
         var key = $("#keyEntry").val()
         var list = $("#addresses").val()
         // remove previous results from map
-        map.entities.clear();
+        ClearMap();
+        ClearResultsGrid();
 
         if (ValidateFormInput(key, list)) {
             var addressList = list.split("\n");
@@ -51,6 +52,13 @@ jQuery(function () {
     });
 });
 
+function AddResultToGrid(id, result) {
+    var lat = result.location.latitude;
+    var long = result.location.longitude;
+    var name = result.address.formattedAddress;
+    AddLineToGrid(id, lat, long, name);
+}
+
 function AddLineToGrid(id, lat, long, description) {
     // TODO - add hyperlink for issue #4
     var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" +
@@ -67,75 +75,86 @@ function ClearAddressInput() {
 
 function ClearResultsGrid() {
     $("table tbody").empty();
+    masterResults = [];
 }
 
 function Search(query) {
     if (!searchManager) {
-        //Create an instance of the search manager and perform the search.
+        // Create an instance of the search manager and perform the search.
         Microsoft.Maps.loadModule('Microsoft.Maps.Search', function () {
             searchManager = new Microsoft.Maps.Search.SearchManager(map);
             Search(query)
         });
     } else {
-        // geocode user query
-        geocodeQuery(query);
+        GeocodeQuery(query);
     }
 }
 
-function geocodeQuery(query) {
+function GeocodeQuery(query) {
     var searchRequest = {
         where: query,
         callback: function (r) {
             if (r && r.results && r.results.length > 0) {
-                var pin, pins = [], locs = [], output = 'Results:<br/>';
+                masterResults.push(r.results[0]);
+                AddResultToGrid(masterResults.length, r.results[0]);
 
-                //Create a pushpin for each result. 
-                for (var i = 0; i < r.results.length; i++) {
-                    if (i == 0) {
-                        var id = results.length
-                        results.push(r.results[0]);
-                        var lat = r.results[0].location.latitude;
-                        var long = r.results[0].location.longitude;
-                        var name = r.results[0].address.formattedAddress;
-                        AddLineToGrid(id, lat, long, name);
-                    }
-
-                    pin = new Microsoft.Maps.Pushpin(r.results[i].location, {
-                        text: i + ''
-                    });
-                    pins.push(pin);
-                    locs.push(r.results[i].location);
-
-                    output += i + ') ' + r.results[i].name + '<br/>';
-                }
-
-                // TODO - update pins #2 and bounding boxes #3
-                //SetMapBoundingBox(locs, pins);
+                ClearMap();
+                BuildAndAddPinsToMap(masterResults);
+                GetAndSetMapBoundingBox(masterResults);
             }
         },
         errorCallback: function (e) {
             // TODO - see about using bootstrap alerts #8
-            //If there is an error, alert the user about it.
+            // If there is an error, alert the user about it.
             //alert("No results found.");
             console.log("No results found");
         }
     };
 
-    //Make the geocode request.
+    // Make the geocode request.
     searchManager.geocode(searchRequest);
 }
 
-function SetMapBoundingBox(locs, pins) {
-    //Add the pins to the map
-    map.entities.push(pins);
+function ClearMap() {
+    map.entities.clear();
+}
 
-    //Determine a bounding box to best view the results.
-    var bounds;
+function GetMapBoundingBox(results) {
+    var locs = [];
+    results.forEach(res => {
+        locs.push(res.location);
+    });
 
-    //Use the locations from the results to calculate a bounding box.
-    bounds = Microsoft.Maps.LocationRect.fromLocations(locs);
+    // Determine a bounding box to best view the results.
+    var bounds = Microsoft.Maps.LocationRect.fromLocations(locs);
+    return bounds;
+}
 
+function SetMapBoundingBox(bounds) {
     map.setView({ bounds: bounds });
+}
+
+function GetAndSetMapBoundingBox(results) {
+    SetMapBoundingBox(GetMapBoundingBox(results));
+}
+
+function BuildListOfPins(results) {
+    var pins = [];
+    for (var i = 0; i < results.length; i++) {
+        var pin = new Microsoft.Maps.Pushpin(results[i].location, {
+            text: (i + 1) + ''
+        });
+        pins.push(pin);
+    }
+    return pins;
+}
+
+function AddPinsToMap(pins) {
+    map.entities.push(pins);
+}
+
+function BuildAndAddPinsToMap(results) {
+    AddPinsToMap(BuildListOfPins(results));
 }
 
 function ValidateFormInput(key, addresses) {
