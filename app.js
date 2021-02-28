@@ -68,12 +68,13 @@ function ClearAll() {
 }
 
 function ClearAddressInput() {
-    $("#addresses").empty()
+    $("#addresses").val("")
 }
 
 function ClearResultsGrid() {
     $("table tbody").empty();
     masterResults = [];
+    ClearMap();
 }
 
 function Search(query) {
