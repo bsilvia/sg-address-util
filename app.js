@@ -5,52 +5,46 @@ jQuery(function () {
     $("#myMap").hide();
     $("#formSubmitBtn").prop("disabled", !map);
 
-    $("#loadMapBtn").on("click", function (event) {
-        var key = $("#keyEntry").val()
-        var list = $("#addresses").val()
-        $("#myMap").show();
-        map = new Microsoft.Maps.Map('#myMap', {
-            credentials: key
-        });
-        $("#formSubmitBtn").prop("disabled", !map);
-        $("#loadMapBtn").prop("disabled", map);
-    });
+    var key = localStorage.getItem("mapKey");
+    $("#keyEntry").val(key);
 
-    $("#formSubmitBtn").on("click", function (event) {
-        var key = $("#keyEntry").val()
-        var list = $("#addresses").val()
-        // remove previous results from map
-        ClearMap();
-        ClearResultsGrid();
-
-        if (ValidateFormInput(key, list)) {
-            var addressList = list.split("\n");
-            addressList.forEach(addr => {
-                if (addr.trim().length > 0) {
-                    Search(addr);
-                }
-            });
-        }
-    });
-
-    $("#formClearAdrBtn").on("click", function (event) {
-        ClearAddressInput();
-    });
-
-    $("#formClearResultsBtn").on("click", function (event) {
-        ClearResultsGrid();
-    });
-
-    $("#formClearAllBtn").on("click", function (event) {
-        ClearAddressInput();
-        ClearResultsGrid();
-    });
-
-    $("#genTableBtn").on("click", function (event) {
-        var id = '1', lat = '42.235', long = '-97.3', name = 'nice name';
-        AddLineToGrid(id, lat, long, name);
-    });
+    $("#loadMapBtn").on("click", LoadMapBtnClick);
+    $("#formSubmitBtn").on("click", SubmitFormBtnClick);
+    $("#formClearAdrBtn").on("click", ClearAddressInput);
+    $("#formClearResultsBtn").on("click", ClearResultsGrid);
+    $("#formClearAllBtn").on("click", ClearAll);
 });
+
+function LoadMapBtnClick() {
+    var key = $("#keyEntry").val();
+    if (!ValidateKey(key)) {
+        return;
+    }
+    localStorage.setItem("mapKey", key);
+    $("#myMap").show();
+    map = new Microsoft.Maps.Map('#myMap', {
+        credentials: key
+    });
+    $("#formSubmitBtn").prop("disabled", !map);
+    $("#loadMapBtn").prop("disabled", map);
+}
+
+function SubmitFormBtnClick() {
+    var key = $("#keyEntry").val()
+    var list = $("#addresses").val()
+    // remove previous results from map
+    ClearMap();
+    ClearResultsGrid();
+
+    if (ValidateFormInput(key, list)) {
+        var addressList = list.split("\n");
+        addressList.forEach(addr => {
+            if (addr.trim().length > 0) {
+                Search(addr);
+            }
+        });
+    }
+}
 
 function AddResultToGrid(id, result) {
     var lat = result.location.latitude;
@@ -66,6 +60,11 @@ function AddLineToGrid(id, lat, long, description) {
         description + "</a>" +
         "</td></tr>";
     $("table tbody").append(markup);
+}
+
+function ClearAll() {
+    ClearAddressInput();
+    ClearResultsGrid();
 }
 
 function ClearAddressInput() {
