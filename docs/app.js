@@ -1,4 +1,4 @@
-var map, searchManager;
+var map, infobox, searchManager;
 var masterResults = [];
 
 jQuery(function () {
@@ -25,6 +25,13 @@ function LoadMapBtnClick() {
     map = new Microsoft.Maps.Map('#myMap', {
         credentials: key
     });
+
+    // Create an infobox at the center of the map but don't show it
+    infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+        visible: false
+    });
+    infobox.setMap(map);
+
     $("#formSubmitBtn").prop("disabled", !map);
     $("#loadMapBtn").prop("disabled", map);
 }
@@ -55,7 +62,7 @@ function AddResultToGrid(id, result) {
     var state = result.address.adminDistrict;
     var country = result.address.countryRegion;
     var zip = result.address.postalCode;
-    
+
     AddLineToGrid(id, lat, long, street, city, state, zip, country);
 }
 
@@ -160,9 +167,28 @@ function BuildListOfPins(results) {
         var pin = new Microsoft.Maps.Pushpin(results[i].location, {
             text: (i + 1) + ''
         });
+
+        pin.metadata = {
+            title: results[i].address.addressLineformattedAddress,
+            description: results[i].address.formattedAddress
+        };
+
+        Microsoft.Maps.Events.addHandler(pin, 'click', PinMouseClicked);
+
         pins.push(pin);
     }
     return pins;
+}
+
+function PinMouseClicked(e) {
+    if (e.target.metadata) {
+        infobox.setOptions({
+            location: e.target.getLocation(),
+            title: e.target.metadata.title,
+            description: e.target.metadata.description,
+            visible: true
+        });
+    }
 }
 
 function AddPinsToMap(pins) {
