@@ -49,17 +49,34 @@ function SubmitFormBtnClick() {
 function AddResultToGrid(id, result) {
     var lat = result.location.latitude;
     var long = result.location.longitude;
-    var name = result.address.formattedAddress;
-    AddLineToGrid(id, lat, long, name);
+    // var name = result.address.formattedAddress;
+    var street = result.address.addressLine;
+    var city = result.address.locality;
+    var state = result.address.adminDistrict;
+    var country = result.address.countryRegion;
+    var zip = result.address.postalCode;
+    
+    AddLineToGrid(id, lat, long, street, city, state, zip, country);
 }
 
-function AddLineToGrid(id, lat, long, description) {
-    var markup = "<tr><td>" + id + "</td><td>" + lat + "</td><td>" + long + "</td><td>" +
-        "<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" + encodeURIComponent(description) +
-        "\" target=\"_blank\" rel=\"noopener noreferrer\">" +
-        description + "</a>" +
-        "</td></tr>";
+function AddLineToGrid(id, lat, long, street, city, state, zip, country) {
+    var markup = "<tr>" +
+        GetTableData(id) +
+        GetTableData(lat) +
+        GetTableData(long) +
+        GetTableData("<a href=\"https://www.bing.com/maps?sp=point." + lat + "_" + long + "_" +
+            encodeURIComponent(street) + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + street + "</a>") +
+        GetTableData(city) +
+        GetTableData(state) +
+        GetTableData(zip) +
+        GetTableData(country) +
+        "</tr>";
+
     $("table tbody").append(markup);
+}
+
+function GetTableData(data) {
+    return "<td>" + data + "</td>";
 }
 
 function ClearAll() {
