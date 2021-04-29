@@ -45,12 +45,9 @@ function SubmitFormBtnClick() {
     ClearResultsGrid();
 
     if (ValidateFormInput(key, list)) {
-        var addressList = list.split("\n");
-        addressList.forEach(addr => {
-            if (addr.trim().length > 0) {
-                Search(addr);
-            }
-        });
+        for (let [key, value] of searchAddrAndResults) {
+            Search(key);
+        }
     }
 }
 
@@ -120,11 +117,8 @@ function GeocodeQuery(query) {
         callback: function (r) {
             if (r && r.results && r.results.length > 0) {
                 masterResults.push(r.results[0]);
-                AddResultToGrid(masterResults.length, r.results[0]);
-
-                ClearMap();
-                BuildAndAddPinsToMap(masterResults);
-                GetAndSetMapBoundingBox(masterResults);
+                searchAddrAndResults.set(query, r.results[0]);
+                UpdateResultsIfSearchIsComplete();
             }
         },
         errorCallback: function (e) {
@@ -137,6 +131,20 @@ function GeocodeQuery(query) {
 
     // Make the geocode request.
     searchManager.geocode(searchRequest);
+}
+
+function UpdateResultsIfSearchIsComplete() {
+    if (searchAddrAndResults.size == masterResults.length) {
+
+        var i = 1;
+        for (let [key, value] of searchAddrAndResults) {
+            AddResultToGrid(i++, value);
+        }
+
+        ClearMap();
+        BuildAndAddPinsToMap(masterResults);
+        GetAndSetMapBoundingBox(masterResults);
+    }
 }
 
 function ClearMap() {
@@ -220,8 +228,7 @@ function ValidateAddressList(addresses) {
         return false;
     }
     else {
-        var list = $("#addresses").val();
-        var addressList = list.split("\n");
+        var addressList = $("#addresses").val().split("\n");
         searchAddrAndResults.clear();
         addressList.forEach(addr => {
             if (addr.trim().length > 0) {
