@@ -1,5 +1,6 @@
 var map, infobox, searchManager;
 var masterResults = [];
+var searchAddrAndResults = new Map();
 
 jQuery(function () {
     $("#myMap").hide();
@@ -37,8 +38,8 @@ function LoadMapBtnClick() {
 }
 
 function SubmitFormBtnClick() {
-    var key = $("#keyEntry").val()
-    var list = $("#addresses").val()
+    var key = $("#keyEntry").val();
+    var list = $("#addresses").val();
     // remove previous results from map
     ClearMap();
     ClearResultsGrid();
@@ -139,7 +140,9 @@ function GeocodeQuery(query) {
 }
 
 function ClearMap() {
-    map.entities.clear();
+    if (map) {
+        map.entities.clear();
+    }
 }
 
 function GetMapBoundingBox(results) {
@@ -215,6 +218,22 @@ function ValidateAddressList(addresses) {
     if (addresses.trim().length == 0) {
         alert("Address text is required");
         return false;
+    }
+    else {
+        var list = $("#addresses").val();
+        var addressList = list.split("\n");
+        searchAddrAndResults.clear();
+        addressList.forEach(addr => {
+            if (addr.trim().length > 0) {
+                if (searchAddrAndResults.has(addr)) {
+                    alert("Duplicate address exists: '" + addr + "' please remove duplicates before searching.")
+                    return false;
+                }
+                else {
+                    searchAddrAndResults.set(addr, undefined);
+                }
+            }
+        });
     }
     return true;
 }
