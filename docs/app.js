@@ -1,5 +1,6 @@
 var map, infobox, searchManager;
 var masterResults = [];
+var searchAddrAndResults = new Map();
 
 jQuery(function () {
     $("#myMap").hide();
@@ -37,19 +38,16 @@ function LoadMapBtnClick() {
 }
 
 function SubmitFormBtnClick() {
-    var key = $("#keyEntry").val()
-    var list = $("#addresses").val()
+    var key = $("#keyEntry").val();
+    var list = $("#addresses").val();
     // remove previous results from map
     ClearMap();
     ClearResultsGrid();
 
     if (ValidateFormInput(key, list)) {
-        var addressList = list.split("\n");
-        addressList.forEach(addr => {
-            if (addr.trim().length > 0) {
-                Search(addr);
-            }
-        });
+        for (let [key, value] of searchAddrAndResults) {
+            Search(key);
+        }
     }
 }
 
@@ -119,11 +117,8 @@ function GeocodeQuery(query) {
         callback: function (r) {
             if (r && r.results && r.results.length > 0) {
                 masterResults.push(r.results[0]);
-                AddResultToGrid(masterResults.length, r.results[0]);
-
-                ClearMap();
-                BuildAndAddPinsToMap(masterResults);
-                GetAndSetMapBoundingBox(masterResults);
+                searchAddrAndResults.set(query, r.results[0]);
+                UpdateResultsIfSearchIsComplete();
             }
         },
         errorCallback: function (e) {
@@ -138,8 +133,24 @@ function GeocodeQuery(query) {
     searchManager.geocode(searchRequest);
 }
 
+function UpdateResultsIfSearchIsComplete() {
+    if (searchAddrAndResults.size == masterResults.length) {
+
+        var i = 1;
+        for (let [key, value] of searchAddrAndResults) {
+            AddResultToGrid(i++, value);
+        }
+
+        ClearMap();
+        BuildAndAddPinsToMap(masterResults);
+        GetAndSetMapBoundingBox(masterResults);
+    }
+}
+
 function ClearMap() {
-    map.entities.clear();
+    if (map) {
+        map.entities.clear();
+    }
 }
 
 function GetMapBoundingBox(results) {
@@ -215,6 +226,21 @@ function ValidateAddressList(addresses) {
     if (addresses.trim().length == 0) {
         alert("Address text is required");
         return false;
+    }
+    else {
+        var addressList = $("#addresses").val().split("\n");
+        searchAddrAndResults.clear();
+        addressList.forEach(addr => {
+            if (addr.trim().length > 0) {
+                if (searchAddrAndResults.has(addr)) {
+                    alert("Duplicate address exists: '" + addr + "' please remove duplicates before searching.")
+                    return false;
+                }
+                else {
+                    searchAddrAndResults.set(addr, undefined);
+                }
+            }
+        });
     }
     return true;
 }
